@@ -1,0 +1,26 @@
+services:
+    tince-front:
+        build: .
+        container_name: tince_expo_app
+        ports:
+            - '8081:8081'
+        volumes:
+            - .:/app
+              - /app/node_modules
+              - /app/.expo
+        environment:
+            - EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
+            - REACT_NATIVE_PACKAGER_HOSTNAME=myapp.tunnel
+        stdin_open: true
+        tty: true
+        develop:
+            watch:
+                - action: sync
+                  path: .
+                  target: /app
+                  ignore:
+                      - node_modules/
+                      - .expo/
+                      - .git/
+                - action: rebuild
+                  path: package.json
