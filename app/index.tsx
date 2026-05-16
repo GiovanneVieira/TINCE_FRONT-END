@@ -1,77 +1,114 @@
-import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/ui/icon';
-import { Text } from '@/components/ui/text';
-import { Link, Stack } from 'expo-router';
-import { MoonStarIcon, StarIcon, SunIcon } from 'lucide-react-native';
-import { useColorScheme } from 'nativewind';
-import * as React from 'react';
-import { Image, type ImageStyle, View } from 'react-native';
+import { Dimensions, FlatList, ScrollView, Text, View } from "react-native";
+import { Calendar, Moon } from "lucide-react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from "expo-router";
 
-const LOGO = {
-  light: require('@/assets/images/react-native-reusables-light.png'),
-  dark: require('@/assets/images/react-native-reusables-dark.png'),
-};
+import { Header } from "@/components/ui/Header";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { ClassCard } from "@/components/cards/ClassCard";
+import { ActivityCard } from "@/components/cards/ActivityCard";
+import { NewsCard } from "@/components/cards/NewsCard";
+import { QuickActions } from "@/components/QuickActions";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useCanvas, useClasses, useNews } from "@/queries";
+import { formatDatePtBr } from "@/lib/utils";
 
-const SCREEN_OPTIONS = {
-  title: 'React Native Reusables',
-  headerTransparent: true,
-  headerRight: () => <ThemeToggle />,
-};
+const SCREEN_W = Dimensions.get("window").width;
+const CARD_W = SCREEN_W * 0.85;
 
-const IMAGE_STYLE: ImageStyle = {
-  height: 76,
-  width: 76,
-};
-
-export default function Screen() {
-  const { colorScheme } = useColorScheme();
+export default function HomeScreen() {
+  const user = useAuthStore((s) => s.user);
+  const { data: classes = [] } = useClasses();
+  const { data: canvas = [] } = useCanvas();
+  const { data: news = [] } = useNews();
 
   return (
-    <>
-      <Stack.Screen options={SCREEN_OPTIONS} />
-      <View className="flex-1 items-center justify-center gap-8 p-4">
-        <Image source={LOGO[colorScheme ?? 'light']} style={IMAGE_STYLE} resizeMode="contain" />
-        <View className="gap-2 p-4">
-          <Text className="ios:text-foreground font-mono text-sm text-muted-foreground">
-            1. Edit <Text variant="code">app/index.tsx</Text> to get started.
-          </Text>
-          <Text className="ios:text-foreground font-mono text-sm text-muted-foreground">
-            2. Save to see your changes instantly.
-          </Text>
+    <SafeAreaView className="flex-1 bg-background" edges={["top"]}>
+      <Header
+        variant="home"
+        onMenuPress={() => router.push("/menu")}
+        onBellPress={() => {}}
+      />
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
+        {/* Greeting */}
+        <View className="px-5 pt-2 pb-4">
+          <View className="flex-row items-center gap-3">
+            <Text className="text-foreground text-4xl font-bold">
+              Olá, {user?.firstName}
+            </Text>
+            <Moon size={28} color="#F5F5F5" fill="#F5F5F5" />
+          </View>
+          <View className="flex-row items-center gap-2 mt-2">
+            <Calendar size={18} color="#A1A1A1" />
+            <Text className="text-muted-foreground text-base">
+              {formatDatePtBr(new Date())}
+            </Text>
+          </View>
         </View>
-        <View className="flex-row gap-2">
-          <Link href="https://reactnativereusables.com" asChild>
-            <Button>
-              <Text>Browse the Docs</Text>
-            </Button>
-          </Link>
-          <Link href="https://github.com/founded-labs/react-native-reusables" asChild>
-            <Button variant="ghost">
-              <Text>Star the Repo</Text>
-              <Icon as={StarIcon} />
-            </Button>
-          </Link>
+
+        {/* Classes carousel */}
+        <FlatList
+          data={classes}
+          keyExtractor={(c) => c.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 20 }}
+          renderItem={({ item }) => (
+            <ClassCard session={item} width={CARD_W} />
+          )}
+        />
+
+        {/* Quick actions */}
+        <QuickActions
+          onAulas={() => {}}
+          onNotas={() => {}}
+          onFaltas={() => {}}
+          onVerMais={() => {}}
+        />
+
+        <View className="h-px bg-border mx-5 mb-6" />
+
+        {/* Canvas */}
+        <View className="px-5">
+          <SectionHeader title="Canvas" onPress={() => {}} />
         </View>
-      </View>
-    </>
-  );
-}
+        <FlatList
+          data={canvas}
+          keyExtractor={(c) => c.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 20 }}
+          renderItem={({ item }) => (
+            <ActivityCard activity={item} width={CARD_W} />
+          )}
+        />
 
-const THEME_ICONS = {
-  light: SunIcon,
-  dark: MoonStarIcon,
-};
+        <View className="h-px bg-border mx-5 my-6" />
 
-function ThemeToggle() {
-  const { colorScheme, toggleColorScheme } = useColorScheme();
+        {/* Events */}
+        <View className="px-5">
+          <SectionHeader title="Próximos Eventos" onPress={() => {}} />
+        </View>
 
-  return (
-    <Button
-      onPressIn={toggleColorScheme}
-      size="icon"
-      variant="ghost"
-      className="ios:size-9 rounded-full web:mx-4">
-      <Icon as={THEME_ICONS[colorScheme ?? 'light']} className="size-5" />
-    </Button>
+        <View className="h-px bg-border mx-5 my-6" />
+
+        {/* News */}
+        <View className="px-5">
+          <SectionHeader title="Notícias" onPress={() => {}} />
+        </View>
+        <FlatList
+          data={news}
+          keyExtractor={(n) => n.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 20 }}
+          renderItem={({ item }) => <NewsCard item={item} width={CARD_W} />}
+        />
+      </ScrollView>
+    </SafeAreaView>
   );
 }

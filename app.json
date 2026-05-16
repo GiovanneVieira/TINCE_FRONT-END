@@ -1,36 +1,30 @@
 {
   "expo": {
-    "name": "TINCE",
-    "slug": "TINCE",
-    "version": "1.0.0",
+    "name": "UniFacens",
+    "slug": "unifacens-app",
+    "version": "4.0.15",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "TINCE",
-    "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "userInterfaceStyle": "dark",
+    "scheme": "unifacens",
+    "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false,
+      "bundleIdentifier": "br.com.unifacens.app"
     },
     "android": {
+      "package": "br.com.unifacens.app",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#0A0A0A"
       }
     },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
-    },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#0A0A0A"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
