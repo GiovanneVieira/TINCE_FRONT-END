@@ -13,6 +13,6 @@
       ]
     }
   },
-  "remoteUser": "root", // Alterado para root
+  "remoteUser": "root", 
   "forwardPorts": [8081]
 }

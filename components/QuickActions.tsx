@@ -1,7 +1,7 @@
-import { Pressable, Text, View } from "react-native";
+﻿import { Pressable, Text, View } from "react-native";
 import {
-  Clock,
-  FileText,
+  Clock3,
+  FileBadge2,
   Hand,
   Plus,
   type LucideIcon,
@@ -28,24 +28,24 @@ export function QuickActions({
   onVerMais,
 }: QuickActionsProps) {
   const actions: Action[] = [
-    { key: "aulas", label: "Aulas", Icon: Clock, onPress: onAulas },
-    { key: "notas", label: "Notas", Icon: FileText, onPress: onNotas },
+    { key: "aulas", label: "Aulas", Icon: Clock3, onPress: onAulas },
+    { key: "notas", label: "Notas", Icon: FileBadge2, onPress: onNotas },
     { key: "faltas", label: "Faltas", Icon: Hand, onPress: onFaltas },
     { key: "vermais", label: "Ver mais", Icon: Plus, onPress: onVerMais },
   ];
 
   return (
-    <View className="flex-row justify-between px-2 my-6">
+    <View className="flex-row justify-between px-2">
       {actions.map(({ key, label, Icon, onPress }) => (
         <Pressable
           key={key}
           onPress={onPress}
-          className="items-center active:opacity-60"
+          className="items-center active:opacity-70"
         >
-          <View className="w-16 h-16 rounded-full bg-surface items-center justify-center mb-2">
-            <Icon size={28} color="#F5F5F5" />
+          <View className="w-[56px] h-[56px] rounded-full bg-[#2A2A2D] items-center justify-center mb-2">
+            <Icon size={24} color="#CECED1" strokeWidth={1.9} />
           </View>
-          <Text className="text-foreground text-base">{label}</Text>
+          <Text className="text-[#CECED1] text-[11px] font-medium">{label}</Text>
         </Pressable>
       ))}
     </View>

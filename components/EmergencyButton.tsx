@@ -1,13 +1,13 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Alert, Modal, Text, TextInput, View } from "react-native";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import { AlertTriangle } from "lucide-react-native";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { useEmergencyMutation } from "@/queries";
 
 const schema = z.object({
-  location: z.string().optional(),
+  location: z.string(),
   message: z.string().min(3, "Descreva brevemente a situação"),
 });
 
@@ -18,7 +18,7 @@ export function EmergencyButton() {
   const form = useForm({
     defaultValues: { location: "", message: "" },
     validators: {
-      onChange: schema
+      onChange: schema,
     },
     onSubmit: async ({ value }) => {
       try {
