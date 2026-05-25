@@ -21,6 +21,7 @@ export default function RootLayout() {
             }}>
             <Stack.Screen name="index" />
             <Stack.Screen name="menu" />
+            <Stack.Screen name="mais-opcoes" />
             <Stack.Screen name="settings" />
             <Stack.Screen
               name="carteirinha"

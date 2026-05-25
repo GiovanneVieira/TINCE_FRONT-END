@@ -1,14 +1,14 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Alert, Modal, Text, TextInput, View } from "react-native";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import { AlertTriangle } from "lucide-react-native";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/button";
 import { useEmergencyMutation } from "@/queries";
 
 const schema = z.object({
-  location: z.string().optional(),
-  message: z.string().min(3, "Descreva brevemente a situação"),
+  location: z.string(),
+  message: z.string().min(3, "Descreva brevemente a situaÃ§Ã£o"),
 });
 
 export function EmergencyButton() {
@@ -26,11 +26,11 @@ export function EmergencyButton() {
         setOpen(false);
         Alert.alert(
           "Acionamento enviado",
-          "A equipe de segurança foi notificada.",
+          "A equipe de seguranÃ§a foi notificada.",
         );
         form.reset();
       } catch {
-        Alert.alert("Erro", "Não foi possível enviar. Tente novamente.");
+        Alert.alert("Erro", "NÃ£o foi possÃ­vel enviar. Tente novamente.");
       }
     },
   });
@@ -44,7 +44,7 @@ export function EmergencyButton() {
         leftIcon={<AlertTriangle size={20} color="#fff" />}
         className="my-3"
       >
-        Botão de Emergência
+        BotÃ£o de EmergÃªncia
       </Button>
 
       <Modal
@@ -56,23 +56,23 @@ export function EmergencyButton() {
         <View className="flex-1 bg-black/70 justify-end">
           <View className="bg-surface rounded-t-3xl p-6 gap-4">
             <Text className="text-foreground text-xl font-bold">
-              Botão de Emergência
+              BotÃ£o de EmergÃªncia
             </Text>
             <Text className="text-muted-foreground">
-              Sua localização e mensagem serão enviadas para a equipe de
-              segurança.
+              Sua localizaÃ§Ã£o e mensagem serÃ£o enviadas para a equipe de
+              seguranÃ§a.
             </Text>
 
             <form.Field name="location">
               {(field) => (
                 <View>
                   <Text className="text-muted-foreground mb-2">
-                    Localização (opcional)
+                    LocalizaÃ§Ã£o (opcional)
                   </Text>
                   <TextInput
                     value={field.state.value}
                     onChangeText={field.handleChange}
-                    placeholder="Ex.: Bloco C, próximo à cantina"
+                    placeholder="Ex.: Bloco C, prÃ³ximo Ã  cantina"
                     placeholderTextColor="#666"
                     className="bg-surface-elevated text-foreground rounded-xl px-4 py-3"
                   />
@@ -84,12 +84,12 @@ export function EmergencyButton() {
               {(field) => (
                 <View>
                   <Text className="text-muted-foreground mb-2">
-                    O que está acontecendo?
+                    O que estÃ¡ acontecendo?
                   </Text>
                   <TextInput
                     value={field.state.value}
                     onChangeText={field.handleChange}
-                    placeholder="Descreva a situação"
+                    placeholder="Descreva a situaÃ§Ã£o"
                     placeholderTextColor="#666"
                     multiline
                     numberOfLines={3}
@@ -127,3 +127,4 @@ export function EmergencyButton() {
     </>
   );
 }
+

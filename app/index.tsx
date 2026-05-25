@@ -67,7 +67,7 @@ export default function HomeScreen() {
           onAulas={() => {}}
           onNotas={() => {}}
           onFaltas={() => {}}
-          onVerMais={() => {}}
+          onVerMais={() => router.push("/mais-opcoes")}
         />
 
         <View className="h-px bg-border mx-5 mb-6" />
