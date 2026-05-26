@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from "react-native";
+﻿import { Pressable, Text, View } from "react-native";
 import { ChevronRight } from "lucide-react-native";
 import { cn } from "@/lib/utils";
 
@@ -16,11 +16,12 @@ export function SectionHeader({
   return (
     <Pressable
       onPress={onPress}
-      disabled={!onPress}
-      className={cn("flex-row items-center justify-between mb-3", className)}
+      className={cn("flex-row items-center justify-between", className)}
     >
-      <Text className="text-muted text-3xl font-bold">{title}</Text>
-      {onPress && <ChevronRight size={28} color="#8A8A8A" />}
+      <Text className="text-[#6F6F74] text-[19px] leading-[25px] font-semibold tracking-tight">
+        {title}
+      </Text>
+      <ChevronRight size={25} color="#7C7C81" strokeWidth={2.1} />
     </Pressable>
   );
 }

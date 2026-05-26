@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from "react-native";
+﻿import { Pressable, Text, View } from "react-native";
 import { ChevronRight } from "lucide-react-native";
 import type { CanvasActivity } from "@/types";
 
@@ -13,21 +13,18 @@ export function ActivityCard({ activity, onPress, width }: ActivityCardProps) {
     <Pressable
       onPress={onPress}
       style={width ? { width } : undefined}
-      className="bg-surface rounded-2xl p-4 mr-3 active:opacity-70"
+      className="bg-[#242427] rounded-[26px] px-6 py-4 mr-4 active:opacity-80"
     >
-      <View className="flex-row items-start justify-between mb-2">
+      <View className="flex-row items-start justify-between mb-2.5">
         <Text
-          className="text-foreground text-base font-semibold flex-1 mr-2"
+          className="text-[#D3D3D5] text-[17px] leading-[24px] font-medium flex-1 mr-2"
           numberOfLines={1}
         >
           {activity.course}
         </Text>
-        <ChevronRight size={20} color="#A1A1A1" />
+        <ChevronRight size={28} color="#AAAAAE" />
       </View>
-      <Text
-        className="text-muted-foreground text-sm leading-5"
-        numberOfLines={2}
-      >
+      <Text className="text-[#909095] text-[16px] leading-[24px]" numberOfLines={2}>
         {activity.description}
       </Text>
     </Pressable>
