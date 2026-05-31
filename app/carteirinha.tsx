@@ -11,7 +11,15 @@ import { useAuthStore } from "@/stores/useAuthStore";
 export default function CarteirinhaScreen() {
   const user = useAuthStore((s) => s.user);
 
-  if (!user) return null;
+  if (!user) {
+    return (
+      <SafeAreaView className="flex-1 bg-black items-center justify-center" edges={["top"]}>
+        <Text className="text-[#D3D3D6] text-[15px] text-center px-6">
+          Sessao nao carregada. Faca login para ver sua carteirinha.
+        </Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <Pressable onPress={() => router.back()} className="flex-1">
