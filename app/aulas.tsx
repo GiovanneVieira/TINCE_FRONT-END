@@ -2,6 +2,7 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   ChevronLeft,
   ChevronRight,
@@ -10,6 +11,8 @@ import {
   Pin,
   Presentation,
 } from "lucide-react-native";
+import { api } from "@/lib/api";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 type DayTab = { key: string; label: string };
 
@@ -17,8 +20,8 @@ type ClassShell = {
   id: string;
   startsAt: string;
   subject: string;
-  teachers: string;
-  room: string;
+  teachers: string | null;
+  room: string | null;
 };
 
 const DAY_TABS: DayTab[] = [
@@ -30,26 +33,32 @@ const DAY_TABS: DayTab[] = [
   { key: "sat", label: "Sab" },
 ];
 
-// API slot: replace by real classes payload later.
-const CLASS_SHELL: ClassShell[] = [
-  {
-    id: "c-1",
-    startsAt: "19:00",
-    subject: "Upx - TIC para Cidades Inteligentes",
-    teachers: "Eliane Rodrigues, Rosana Antonio, Wilson Junior",
-    room: "C29",
-  },
-  {
-    id: "c-2",
-    startsAt: "19:50",
-    subject: "Upx - TIC para Cidades Inteligentes",
-    teachers: "Eliane Rodrigues, Rosana Antonio, Wilson Junior",
-    room: "C29",
-  },
-];
+function toHour(isoDate: string): string {
+  const date = new Date(isoDate);
+  return date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+}
 
 export default function AulasScreen() {
   const [activeDay, setActiveDay] = useState<string>("mon");
+  const alunoId = useAuthStore((state) => state.user?.id);
+
+  const { data: classShell = [] } = useQuery({
+    queryKey: ["aulas-by-aluno", alunoId],
+    enabled: !!alunoId,
+    queryFn: async (): Promise<ClassShell[]> => {
+      if (!alunoId) return [];
+      const aulas = await api.getAulasMe();
+      return aulas
+        .map((aula) => ({
+          id: aula.id,
+          startsAt: toHour(aula.dataHora),
+          subject: aula.materiaNome ?? "Materia",
+          teachers: aula.professorNome ?? null,
+          room: aula.sala ?? null,
+        }))
+        .sort((a, b) => a.startsAt.localeCompare(b.startsAt));
+    },
+  });
 
   return (
     <SafeAreaView className="flex-1 bg-black" edges={["top"]}>
@@ -109,7 +118,7 @@ export default function AulasScreen() {
           </Text>
 
           <View className="mt-3">
-            {CLASS_SHELL.map((item, index) => (
+            {classShell.map((item, index) => (
               <View key={item.id} className="flex-row">
                 <View className="w-[52px] items-center pt-1">
                   <View className="flex-row items-center gap-1">
@@ -118,7 +127,7 @@ export default function AulasScreen() {
                       {item.startsAt}
                     </Text>
                   </View>
-                  {index < CLASS_SHELL.length - 1 && (
+                  {index < classShell.length - 1 && (
                     <View className="w-[2px] h-[208px] bg-[#2A2A2E] mt-3" />
                   )}
                 </View>
@@ -138,13 +147,13 @@ export default function AulasScreen() {
                     <View className="mt-5 flex-row items-start gap-3">
                       <Presentation size={18} color="#6F6F74" />
                       <Text className="text-[#A9A9AE] text-[14px] leading-[20px] flex-1">
-                        {item.teachers}
+                        {item.teachers ?? "-"}
                       </Text>
                     </View>
 
                     <View className="mt-3 flex-row items-center gap-3">
                       <Pin size={17} color="#6F6F74" />
-                      <Text className="text-[#A9A9AE] text-[14px]">{item.room}</Text>
+                      <Text className="text-[#A9A9AE] text-[14px]">{item.room ?? "-"}</Text>
                     </View>
 
                     <View className="mt-7 flex-row items-center justify-end gap-2">
@@ -157,6 +166,16 @@ export default function AulasScreen() {
                 </View>
               </View>
             ))}
+            {!alunoId && (
+              <Text className="text-[#8E8E93] text-[15px] mt-4">
+                Sessao nao carregada. Faca login para ver as aulas.
+              </Text>
+            )}
+            {alunoId && classShell.length === 0 && (
+              <Text className="text-[#8E8E93] text-[15px] mt-4">
+                Nenhuma aula encontrada para o aluno.
+              </Text>
+            )}
           </View>
         </View>
       </ScrollView>

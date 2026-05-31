@@ -1,7 +1,10 @@
-﻿import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
+import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, CircleHelp } from "lucide-react-native";
+import { api } from "@/lib/api";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 type AbsenceItem = {
   id: string;
@@ -10,42 +13,8 @@ type AbsenceItem = {
   limit: number | null;
 };
 
-// API slots: replace by backend payload later.
 const TERM_LABEL = "2026/01";
 const LAST_SYNC_LABEL = "Última sincronização às 13:10";
-
-const ABSENCE_SHELL: AbsenceItem[] = [
-  {
-    id: "a-1",
-    subject: "Lean Startup e Agile  (ELETIVA 3 / Período:7)",
-    misses: 0,
-    limit: null,
-  },
-  {
-    id: "a-2",
-    subject: "Eletrônica Digital Computacional",
-    misses: 0,
-    limit: 18,
-  },
-  {
-    id: "a-3",
-    subject: "Processamento de Imagens",
-    misses: 2,
-    limit: 19,
-  },
-  {
-    id: "a-4",
-    subject: "Engenharia de Software",
-    misses: 4,
-    limit: 19,
-  },
-  {
-    id: "a-5",
-    subject: "Upx - TIC para Cidades Inteligentes",
-    misses: 2,
-    limit: 29,
-  },
-];
 
 function progressWidth(misses: number, limit: number | null): `${number}%` {
   if (!limit || limit <= 0) return "0%";
@@ -59,6 +28,21 @@ function ratioLabel(misses: number, limit: number | null): string {
 }
 
 export default function FaltasScreen() {
+  const alunoId = useAuthStore((state) => state.user?.id);
+  const { data: absenceShell = [] } = useQuery({
+    queryKey: ["faltas-by-aluno", alunoId],
+    enabled: !!alunoId,
+    queryFn: async (): Promise<AbsenceItem[]> => {
+      const faltas = await api.getFaltasMe();
+      return faltas.map((f) => ({
+        id: f.materiaId,
+        subject: f.materiaNome,
+        misses: f.faltas,
+        limit: f.limite,
+      }));
+    },
+  });
+
   return (
     <SafeAreaView className="flex-1 bg-black" edges={["top"]}>
       <ScrollView
@@ -108,7 +92,7 @@ export default function FaltasScreen() {
         </Text>
 
         <View className="px-5 mt-6 gap-4">
-          {ABSENCE_SHELL.map((item) => (
+          {absenceShell.map((item) => (
             <Pressable
               key={item.id}
               className="rounded-[24px] bg-[#242427] px-5 py-6 active:opacity-80"
@@ -133,6 +117,14 @@ export default function FaltasScreen() {
               </View>
             </Pressable>
           ))}
+          {!alunoId && (
+            <Text className="text-[#A8A8AC] text-[15px]">
+              Sessao nao carregada. Faca login para ver as faltas.
+            </Text>
+          )}
+          {alunoId && absenceShell.length === 0 && (
+            <Text className="text-[#A8A8AC] text-[15px]">Nenhuma falta encontrada.</Text>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>

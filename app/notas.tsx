@@ -1,7 +1,10 @@
-﻿import { Pressable, ScrollView, Text, View, useWindowDimensions } from "react-native";
+import { Pressable, ScrollView, Text, View, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
+import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, CircleHelp } from "lucide-react-native";
+import { api } from "@/lib/api";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 type GradeCell = {
   key: string;
@@ -16,78 +19,38 @@ type SubjectGrade = {
   cells: GradeCell[];
 };
 
-// API slot: replace by backend payload later.
 const TERM_LABEL = "2026/01";
 
-// API slot: replace by backend payload later.
-const SUBJECT_GRADES: SubjectGrade[] = [
-  {
-    id: "g-1",
-    subject: "Eletrônica Digital Computacional",
-    cells: [
-      { key: "ac1", label: "AC1", value: "8,6" },
-      { key: "ac2", label: "AC2", value: "-" },
-      { key: "af", label: "AF", value: "-" },
-      { key: "sub", label: "Sub", value: "-" },
-      { key: "ag", label: "AG", value: "-" },
-      { key: "media", label: "Média", value: "-", highlight: true },
-    ],
-  },
-  {
-    id: "g-2",
-    subject: "Engenharia de Software",
-    cells: [
-      { key: "ac1", label: "AC1", value: "10" },
-      { key: "ac2", label: "AC2", value: "-" },
-      { key: "af", label: "AF", value: "-" },
-      { key: "sub", label: "Sub", value: "-" },
-      { key: "ag", label: "AG", value: "-" },
-      { key: "media", label: "Média", value: "-", highlight: true },
-    ],
-  },
-  {
-    id: "g-3",
-    subject: "Lean Startup e Agile  (ELETIVA 3 / Período:7)",
-    cells: [
-      { key: "ac1", label: "AC1", value: "9,5" },
-      { key: "ac2", label: "AC2", value: "-" },
-      { key: "af", label: "AF", value: "-" },
-      { key: "sub", label: "Sub", value: "-" },
-      { key: "ag", label: "AG", value: "-" },
-      { key: "media", label: "Média", value: "-", highlight: true },
-    ],
-  },
-  {
-    id: "g-4",
-    subject: "Processamento de Imagens",
-    cells: [
-      { key: "ac1", label: "AC1", value: "9,3" },
-      { key: "ac2", label: "AC2", value: "7,1" },
-      { key: "af", label: "AF", value: "-" },
-      { key: "sub", label: "Sub", value: "-" },
-      { key: "ag", label: "AG", value: "-" },
-      { key: "media", label: "Média", value: "-", highlight: true },
-    ],
-  },
-  {
-    id: "g-5",
-    subject: "Upx - TIC para Cidades Inteligentes",
-    cells: [
-      { key: "ac1", label: "AC1", value: "6" },
-      { key: "ac2", label: "AC2", value: "-" },
-      { key: "af", label: "AF", value: "-" },
-      { key: "sub", label: "Sub", value: "-" },
-      { key: "ag", label: "AG", value: "-" },
-      { key: "media", label: "Média", value: "-", highlight: true },
-    ],
-  },
-];
+function formatGrade(value: number | null): string {
+  if (value === null || value === undefined) return "-";
+  return String(value).replace(".", ",");
+}
 
 export default function NotasScreen() {
   const { width } = useWindowDimensions();
+  const alunoId = useAuthStore((state) => state.user?.id);
 
-  // 6 cells per row, always visible on screen.
-  const horizontalPadding = 40; // px-5 both sides
+  const { data: subjectGrades = [] } = useQuery({
+    queryKey: ["notas-me", TERM_LABEL, alunoId],
+    enabled: !!alunoId,
+    queryFn: async (): Promise<SubjectGrade[]> => {
+      const notas = await api.getNotasMe(TERM_LABEL);
+      return notas.map((n) => ({
+        id: n.id,
+        subject: n.materiaNome ?? n.codigo ?? "Materia",
+        cells: [
+          { key: "ac1", label: "AC1", value: formatGrade(n.ac1) },
+          { key: "ac2", label: "AC2", value: formatGrade(n.ac2) },
+          { key: "af", label: "AF", value: formatGrade(n.af) },
+          { key: "sub", label: "Sub", value: formatGrade(n.sub) },
+          { key: "ag", label: "AG", value: formatGrade(n.ag) },
+          { key: "media", label: "Media", value: formatGrade(n.media), highlight: true },
+        ],
+      }));
+    },
+  });
+
+  const horizontalPadding = 40;
   const gap = 8;
   const totalGap = gap * 5;
   const cardWidth = Math.max(48, Math.floor((width - horizontalPadding - totalGap) / 6));
@@ -107,9 +70,7 @@ export default function NotasScreen() {
               >
                 <ChevronLeft size={30} color="#4B4B50" strokeWidth={2.1} />
               </Pressable>
-              <Text className="text-[#A0A0A5] text-[18px] font-medium ml-2">
-                Notas
-              </Text>
+              <Text className="text-[#A0A0A5] text-[18px] font-medium ml-2">Notas</Text>
             </View>
 
             <Pressable className="w-9 h-9 rounded-full bg-[#2A2A2D] items-center justify-center active:opacity-70">
@@ -137,11 +98,20 @@ export default function NotasScreen() {
         </View>
 
         <Text className="text-[#6E6E73] text-[13px] mt-7 px-5 font-medium">
-          Última sincronização às 13:10
+          Ultima sincronizacao as 13:10
         </Text>
 
         <View className="px-5 mt-7 gap-6">
-          {SUBJECT_GRADES.map((item) => (
+          {!alunoId && (
+            <Text className="text-[#9D9DA2] text-[15px]">
+              Sessao nao carregada. Faca login para ver as notas.
+            </Text>
+          )}
+          {alunoId && subjectGrades.length === 0 && (
+            <Text className="text-[#9D9DA2] text-[15px]">Nenhuma nota encontrada.</Text>
+          )}
+
+          {subjectGrades.map((item) => (
             <View key={item.id}>
               <Text className="text-[#9D9DA2] text-[16px] font-semibold leading-[24px] mb-3">
                 {item.subject}

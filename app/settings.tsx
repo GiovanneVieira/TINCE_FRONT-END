@@ -21,18 +21,26 @@ export default function SettingsScreen() {
 
       <ScrollView contentContainerStyle={{ paddingBottom: 32 }}>
         <View className="items-center pt-2 pb-8">
-          <Avatar
-            uri={user?.avatarUrl}
-            name={user?.name ?? ""}
-            size="xl"
-            showEditBadge
-          />
-          <Text className="text-foreground text-2xl font-bold mt-4">
-            {user?.name}
-          </Text>
-          <Text className="text-muted-foreground text-lg mt-1">
-            {user?.course}
-          </Text>
+          {user ? (
+            <>
+              <Avatar
+                uri={user.avatarUrl}
+                name={user.name}
+                size="xl"
+                showEditBadge
+              />
+              <Text className="text-foreground text-2xl font-bold mt-4">
+                {user.name}
+              </Text>
+              <Text className="text-muted-foreground text-lg mt-1">
+                {user.course}
+              </Text>
+            </>
+          ) : (
+            <Text className="text-muted-foreground text-lg mt-1">
+              Sessao nao carregada. Faca login para ver suas configuracoes.
+            </Text>
+          )}
         </View>
 
         <View className="px-5">

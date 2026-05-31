@@ -13,15 +13,8 @@ import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { ReactNode } from "react";
 
+import { api } from "@/lib/api";
 import { useAuthStore } from "@/stores/useAuthStore";
-
-// API slots: replace by backend profile payload later.
-const MENU_PROFILE_FALLBACK = {
-  name: "Lucas Rodrigues Paifer",
-  course: "Engenharia de Computação",
-  avatarUrl:
-    "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=500",
-};
 
 type MenuAction = {
   key: string;
@@ -33,19 +26,20 @@ type MenuAction = {
 export default function MenuScreen() {
   const { user, logout } = useAuthStore();
 
-  const profileName = user?.name || MENU_PROFILE_FALLBACK.name;
-  const profileCourse = user?.course || MENU_PROFILE_FALLBACK.course;
-  const profileAvatar = user?.avatarUrl || MENU_PROFILE_FALLBACK.avatarUrl;
-
   const handleLogout = () => {
     Alert.alert("Desconectar", "Tem certeza que deseja sair?", [
       { text: "Cancelar", style: "cancel" },
       {
         text: "Sair",
         style: "destructive",
-        onPress: () => {
+        onPress: async () => {
+          try {
+            await api.signOut();
+          } catch {
+            // Mantem logout local mesmo com falha de rede.
+          }
           logout();
-          router.replace("/");
+          router.replace("/login");
         },
       },
     ]);
@@ -101,14 +95,22 @@ export default function MenuScreen() {
         </View>
 
         <View className="items-center pt-3 pb-4">
-          <Image
-            source={{ uri: profileAvatar }}
-            className="w-[160px] h-[160px] rounded-full"
-          />
-          <Text className="text-white text-[23px] leading-[30px] font-semibold mt-6 text-center px-8">
-            {profileName}
-          </Text>
-          <Text className="text-[#D3D3D6] text-[15px] mt-2">{profileCourse}</Text>
+          {user ? (
+            <>
+              <Image
+                source={{ uri: user.avatarUrl ?? undefined }}
+                className="w-[160px] h-[160px] rounded-full"
+              />
+              <Text className="text-white text-[23px] leading-[30px] font-semibold mt-6 text-center px-8">
+                {user.name}
+              </Text>
+              <Text className="text-[#D3D3D6] text-[15px] mt-2">{user.course}</Text>
+            </>
+          ) : (
+            <Text className="text-[#D3D3D6] text-[15px] mt-2">
+              Sessao nao carregada. Faca login para ver seu perfil.
+            </Text>
+          )}
         </View>
 
         <View className="px-6 gap-3.5">
