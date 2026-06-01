@@ -10,6 +10,8 @@ export function IdentityCard({ user }: IdentityCardProps) {
   const screen = Dimensions.get("window");
   const width = Math.min(screen.height * 0.72, 560);
   const height = Math.min(screen.width * 0.78, 390);
+  const photoSize = 118;
+  const photoTop = Math.round(height * 0.39 - photoSize / 2);
   const name = user.name || "-";
   const course = user.course || "-";
   const cpf = formatCpf(user.cpf);
@@ -30,7 +32,10 @@ export function IdentityCard({ user }: IdentityCardProps) {
             ))}
           </View>
         </View>
-        <View className="absolute left-3 top-[96px] w-[118px] h-[118px] rounded-full bg-[#1B1F23] items-center justify-center z-30">
+        <View
+          className="absolute left-3 w-[118px] h-[118px] rounded-full bg-[#1B1F23] items-center justify-center z-30"
+          style={{ top: photoTop }}
+        >
           <View className="w-[104px] h-[104px] rounded-full overflow-hidden bg-[#D9D9D9] border-[2px] border-[#ECECEC]">
             {user.avatarUrl ? (
               <Image source={{ uri: user.avatarUrl }} className="w-full h-full" />

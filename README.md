@@ -6,6 +6,14 @@ Este projeto adota oficialmente o modelo Delphi + Foundation Documentation para 
 
 - Guia operacional original: https://www.notion.so/Como-compilar-o-Front-End-34d26f6052d080f7bfa3fc65b184f2e8
 
+## Environment Variables
+
+- `EXPO_PUBLIC_API_BASE_URL`: base URL da API consumida pelo app.
+  - Exemplo local: `http://localhost:3000`
+  - Exemplo hospedado: `https://nfc-api-w40n.onrender.com`
+- `EXPO_PUBLIC_APP_ORIGIN`: origin enviado no fluxo de auth (`better-auth`/CORS).
+  - Exemplo local: `http://localhost:8081`
+
 ## Regra de Execucao (Obrigatoria)
 
 Antes de implementar qualquer mudanca relevante no app:

@@ -1,7 +1,37 @@
 import type { AppEvent, CanvasActivity, ClassSession, NewsItem } from "@/types";
 
-const BASE_URL = "http://localhost:3000";
-const APP_ORIGIN = "http://localhost:8081";
+const DEFAULT_DEV_API_BASE_URL = "http://localhost:3000";
+const DEFAULT_PROD_API_BASE_URL = "https://nfc-api-w40n.onrender.com";
+const DEFAULT_DEV_APP_ORIGIN = "http://localhost:8081";
+
+function normalizeBaseUrl(url: string): string {
+  return url.endsWith("/") ? url.slice(0, -1) : url;
+}
+
+function resolveApiBaseUrl(): string {
+  const envUrl = process.env.EXPO_PUBLIC_API_BASE_URL?.trim();
+  if (envUrl) {
+    return normalizeBaseUrl(envUrl);
+  }
+
+  if (__DEV__) {
+    return DEFAULT_DEV_API_BASE_URL;
+  }
+
+  return DEFAULT_PROD_API_BASE_URL;
+}
+
+function resolveAppOrigin(): string {
+  const envOrigin = process.env.EXPO_PUBLIC_APP_ORIGIN?.trim();
+  if (envOrigin) {
+    return envOrigin;
+  }
+
+  return DEFAULT_DEV_APP_ORIGIN;
+}
+
+const BASE_URL = resolveApiBaseUrl();
+const APP_ORIGIN = resolveAppOrigin();
 
 export type MateriaResponseDTO = {
   id: string;
