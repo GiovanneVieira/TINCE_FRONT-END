@@ -89,6 +89,11 @@ export default function MaisOpcoesScreen() {
             {SHORTCUTS.map((item) => (
               <Pressable
                 key={item.id}
+                onPress={() => {
+                  if (item.id === "carteirinha") {
+                    router.push("/carteirinha");
+                  }
+                }}
                 className="items-center active:opacity-70"
               >
                 <View className="w-[102px] h-[102px] rounded-full bg-[#242427] items-center justify-center mb-3">

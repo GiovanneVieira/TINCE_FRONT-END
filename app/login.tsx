@@ -12,6 +12,7 @@ export default function LoginScreen() {
   const [error, setError] = useState<string | null>(null);
   const setUser = useAuthStore((s) => s.setUser);
   const setAuthReady = useAuthStore((s) => s.setAuthReady);
+  const setAuthMode = useAuthStore((s) => s.setAuthMode);
   const queryClient = useQueryClient();
 
   const loginMutation = useMutation({
@@ -22,6 +23,7 @@ export default function LoginScreen() {
       return me;
     },
     onSuccess: (me) => {
+      setAuthMode("remote");
       setUser({
         id: me.id,
         name: me.name,
@@ -40,6 +42,23 @@ export default function LoginScreen() {
       setError("Falha no login. Verifique email e senha.");
     },
   });
+
+  const handleMockLogin = () => {
+    setAuthMode("mock");
+    setUser({
+      id: "mock-student-001",
+      name: "Aluno Mock NFC",
+      firstName: "Aluno",
+      course: "Engenharia de Computacao",
+      cpf: "00000000000",
+      ra: "RA-MOCK-001",
+      validity: "2026-12-31",
+      avatarUrl: null,
+    });
+    setAuthReady(true);
+    queryClient.invalidateQueries({ queryKey: ["session-me"] });
+    router.replace("/");
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-black px-6 py-8">
@@ -79,6 +98,15 @@ export default function LoginScreen() {
       >
         <Text className="text-white text-base font-semibold">
           {loginMutation.isPending ? "Entrando..." : "Entrar"}
+        </Text>
+      </Pressable>
+
+      <Pressable
+        onPress={handleMockLogin}
+        className="mt-4 border border-[#3E74B8] rounded-2xl py-4 items-center active:opacity-80"
+      >
+        <Text className="text-[#9EC2F1] text-base font-semibold">
+          Entrar com conta mock
         </Text>
       </Pressable>
 
