@@ -50,14 +50,7 @@ export function Header({
           <MenuIcon size={31} color="#F5F5F5" strokeWidth={2.3} />
         </Pressable>
 
-        <View className="flex-row items-center gap-2">
-          <View className="w-9 h-9 rounded-full border border-white/50 items-center justify-center">
-            <Text className="text-white font-extrabold text-sm">F</Text>
-          </View>
-          <Text className="text-white text-[22px] font-semibold tracking-tight">
-            UniFacens
-          </Text>
-        </View>
+        <View className="w-10 h-10" />
 
         <Pressable
           onPress={onBellPress}

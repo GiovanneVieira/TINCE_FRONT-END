@@ -13,6 +13,7 @@ import { useAuthStore } from '@/stores/useAuthStore';
 function SessionBootstrap() {
   const setUser = useAuthStore((s) => s.setUser);
   const setAuthReady = useAuthStore((s) => s.setAuthReady);
+  const authMode = useAuthStore((s) => s.authMode);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const authReady = useAuthStore((s) => s.authReady);
   const pathname = usePathname();
@@ -21,6 +22,7 @@ function SessionBootstrap() {
   const { data, isError, isSuccess } = useQuery({
     queryKey: ['session-me'],
     queryFn: api.getMe,
+    enabled: authMode === 'remote',
     retry: false,
     refetchInterval: 1000 * 60 * 4,
   });
@@ -40,7 +42,7 @@ function SessionBootstrap() {
       setAuthReady(true);
       return;
     }
-    if (isError) {
+    if (isError && authMode === 'remote') {
       setUser(null);
       setAuthReady(true);
       return;
@@ -48,7 +50,7 @@ function SessionBootstrap() {
     if (isSuccess) {
       setAuthReady(true);
     }
-  }, [data, isError, isSuccess, setAuthReady, setUser]);
+  }, [authMode, data, isError, isSuccess, setAuthReady, setUser]);
 
   useEffect(() => {
     if (!authReady) return;
