@@ -1,6 +1,6 @@
 import type { AppEvent, CanvasActivity, ClassSession, NewsItem } from "@/types";
 
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = "https://nfc-api-w40n.onrender.com";
 const APP_ORIGIN = "http://localhost:8081";
 
 export type MateriaResponseDTO = {
@@ -91,7 +91,7 @@ async function http<T>(path: string, init?: RequestInit): Promise<T> {
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
-      ...(init?.headers ?? {}),
+      ...(init?.headers ?? {})
     },
   });
 
@@ -167,7 +167,7 @@ export const api = {
     await http("/api/auth/sign-in/email", {
       method: "POST",
       headers: {
-        Origin: APP_ORIGIN,
+        Origin: BASE_URL,
       },
       body: JSON.stringify(input),
     });
@@ -177,7 +177,7 @@ export const api = {
     await http("/api/auth/sign-out", {
       method: "POST",
       headers: {
-        Origin: APP_ORIGIN,
+        Origin: BASE_URL,
       },
       body: JSON.stringify({}),
     });

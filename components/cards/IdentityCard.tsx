@@ -30,7 +30,7 @@ export function IdentityCard({ user }: IdentityCardProps) {
             ))}
           </View>
         </View>
-        <View className="absolute left-3 top-[96px] w-[118px] h-[118px] rounded-full bg-[#1B1F23] items-center justify-center z-30">
+        <View className="absolute left-3 top-[3rem] w-[118px] h-[118px] rounded-full bg-[#1B1F23] items-center justify-center z-30">
           <View className="w-[104px] h-[104px] rounded-full overflow-hidden bg-[#D9D9D9] border-[2px] border-[#ECECEC]">
             {user.avatarUrl ? (
               <Image source={{ uri: user.avatarUrl }} className="w-full h-full" />
